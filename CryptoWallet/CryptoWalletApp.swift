@@ -12,7 +12,11 @@ struct CryptoWalletApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            NavigationView {
+                HomeView()
+                    .navigationBarBackButtonHidden(true)
+            }
+            
                
         }
     }
