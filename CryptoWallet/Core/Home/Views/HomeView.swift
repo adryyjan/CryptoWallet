@@ -16,25 +16,8 @@ struct HomeView: View {
                 .ignoresSafeArea()
             
             VStack {
-                HStack {
-                    CircleButtonView(iconName: showPortfolio ? "plus" : "info")
-                        .animation(nil ,value: 0)
-                        .background(CircleButtonAnimationView(isAnimating: $showPortfolio))
-                    Spacer()
-                    Text( showPortfolio ? "Portfolio" : "Prices")
-                        .font(.headline)
-                        .fontWeight(.heavy)
-                        .foregroundStyle(Color.theme.accent)
-                        .animation(nil ,value: 0)
-                    Spacer()
-                    CircleButtonView(iconName: "chevron.right")
-                        .rotationEffect(Angle(degrees: showPortfolio ? 180 : 0))
-                        .onTapGesture {
-                            withAnimation(.spring()) {
-                                showPortfolio.toggle()
-                            }
-                        }
-                }
+ 
+                HomeHeader
                 
                 Spacer(minLength: 0)
             }
@@ -44,4 +27,29 @@ struct HomeView: View {
 
 #Preview {
     HomeView()
+}
+
+
+extension HomeView {
+    private var HomeHeader: some View {
+        HStack {
+            CircleButtonView(iconName: showPortfolio ? "plus" : "info")
+                .animation(nil ,value: 0)
+                .background(CircleButtonAnimationView(isAnimating: $showPortfolio))
+            Spacer()
+            Text( showPortfolio ? "Portfolio" : "Prices")
+                .font(.headline)
+                .fontWeight(.heavy)
+                .foregroundStyle(Color.theme.accent)
+                .animation(nil ,value: 0)
+            Spacer()
+            CircleButtonView(iconName: "chevron.right")
+                .rotationEffect(Angle(degrees: showPortfolio ? 180 : 0))
+                .onTapGesture {
+                    withAnimation(.spring()) {
+                        showPortfolio.toggle()
+                    }
+                }
+        }
+    }
 }
