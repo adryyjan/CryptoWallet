@@ -10,14 +10,28 @@ import SwiftUI
 struct HomeView: View {
     
     @State private var showPortfolio: Bool = false
+    @Environment(HomeVM.self) private var vm
     var body: some View {
         ZStack {
             Color.theme.background
                 .ignoresSafeArea()
             
             VStack {
- 
+                
                 HomeHeader
+                
+                columnTitles
+                .font(.caption)
+                .foregroundStyle(Color.theme.secoundaryText)
+                .padding(.horizontal)
+                if !showPortfolio {
+                    allCoins
+                        .transition(.move(edge: .leading))
+                }
+                if showPortfolio {
+                    portfolioCoins
+                        .transition(.move(edge: .trailing))
+                }
                 
                 Spacer(minLength: 0)
             }
@@ -27,6 +41,7 @@ struct HomeView: View {
 
 #Preview {
     HomeView()
+        .environment(HomeVM())
 }
 
 
@@ -50,6 +65,40 @@ extension HomeView {
                         showPortfolio.toggle()
                     }
                 }
+        }
+    }
+    
+    private var allCoins: some View {
+        List{
+            ForEach(vm.allCoins) { coin in
+                CoinRowView(coin: coin, showHoldingsColumn: false)
+                    .listRowInsets(.init(top: 10, leading: 0, bottom: 10, trailing: 10))
+            }
+        }
+        .listStyle(PlainListStyle())
+    }
+    private var portfolioCoins: some View {
+        List{
+            ForEach(vm.portfolioCoins) { coin in
+                CoinRowView(coin: coin, showHoldingsColumn: false)
+                    .listRowInsets(.init(top: 10, leading: 0, bottom: 10, trailing: 10))
+            }
+        }
+        .listStyle(PlainListStyle())
+    }
+    
+    private var columnTitles: some View {
+        HStack {
+            Text("Cooin")
+            Spacer()
+            if showPortfolio {
+                Text("Holdings")
+                    .transition(.move(edge: .leading))
+                    
+            }
+            
+            Text("Price")
+                .frame(width: UIScreen.main.bounds.width / 3.5)
         }
     }
 }

@@ -9,6 +9,7 @@ import SwiftUI
 
 @main
 struct CryptoWalletApp: App {
+    @State private var homeVM = HomeVM()
 
     var body: some Scene {
         WindowGroup {
@@ -16,7 +17,7 @@ struct CryptoWalletApp: App {
                 HomeView()
                     .navigationBarBackButtonHidden(true)
             }
-            
+            .environment(homeVM)
                
         }
     }
