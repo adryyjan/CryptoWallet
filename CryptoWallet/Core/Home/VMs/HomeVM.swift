@@ -6,17 +6,26 @@
 //
 
 import SwiftUI
+import Combine
 
 @Observable
 final class HomeVM {
     
     var allCoins: [CoinModel] = []
     var portfolioCoins: [CoinModel] = []
+    private let dataService = CoinDataService()
+    private var cancellables: Set<AnyCancellable> = []
     
     init() {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-            self.allCoins.append(CoinModel.coin)
-            self.portfolioCoins.append(CoinModel.coin)
-        }
+        addSubscription()
+    }
+    
+    func addSubscription() {
+        dataService.$allCoins
+            .sink { [weak self] (returnedCoins) in
+                guard let self = self else { return }
+                self.allCoins = returnedCoins
+            }
+            .store(in: &cancellables)
     }
 }
