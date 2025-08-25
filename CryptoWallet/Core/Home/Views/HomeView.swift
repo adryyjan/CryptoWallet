@@ -10,6 +10,7 @@ import SwiftUI
 struct HomeView: View {
     
     @State private var showPortfolio: Bool = false
+    
     @Environment(HomeVM.self) private var vm
     var body: some View {
         ZStack {
