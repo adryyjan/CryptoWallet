@@ -13,6 +13,8 @@ struct HomeView: View {
     
     @Environment(HomeVM.self) private var vm
     var body: some View {
+        @Bindable var vm = vm
+        
         ZStack {
             Color.theme.background
                 .ignoresSafeArea()
@@ -20,6 +22,8 @@ struct HomeView: View {
             VStack {
                 
                 HomeHeader
+                
+                SearchBarView(searchText: $vm.searchText)
                 
                 columnTitles
                 .font(.caption)
@@ -90,7 +94,7 @@ extension HomeView {
     
     private var columnTitles: some View {
         HStack {
-            Text("Cooin")
+            Text("Coin")
             Spacer()
             if showPortfolio {
                 Text("Holdings")
