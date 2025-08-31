@@ -8,32 +8,6 @@
 import SwiftUI
 import Combine
 
-//@Observable
-//final class HomeVM {
-//    
-//    var allCoins: [CoinModel] = []
-//    var portfolioCoins: [CoinModel] = []
-//    var searchText: String = ""
-//    private let dataService = CoinDataService()
-//    private var cancellables: Set<AnyCancellable> = []
-//    
-//    init() {
-//        addSubscription()
-//    }
-//    
-//    func addSubscription() {
-//        dataService.$allCoins
-//            .sink { [weak self] (returnedCoins) in
-//                guard let self = self else { return }
-//                self.allCoins = returnedCoins
-//            }
-//            .store(in: &cancellables)
-//    }
-//    
-//}
-
-
-
 @Observable
 
 final class HomeVM {
@@ -41,6 +15,13 @@ final class HomeVM {
     var portfolioCoins: [CoinModel] = []
     var filteredCoins: [CoinModel] = []
     var searchText: String = "" { didSet { applyFilter() } }
+    
+    var statistics: [StatiscticModel] = [
+        StatiscticModel(title: "Title1", value: "111", percentageChange: 21),
+        StatiscticModel(title: "Title2", value: "222"),
+        StatiscticModel(title: "Title3", value: "333"),
+        StatiscticModel(title: "Title4", value: "444", percentageChange: -32)
+    ]
 
     private let dataService = CoinDataService()
     private var cancellables: Set<AnyCancellable> = []
