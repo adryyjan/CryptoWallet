@@ -16,23 +16,28 @@ final class HomeVM {
     var filteredCoins: [CoinModel] = []
     var searchText: String = "" { didSet { applyFilter() } }
     
-    var statistics: [StatiscticModel] = [
-        StatiscticModel(title: "Title1", value: "111", percentageChange: 21),
-        StatiscticModel(title: "Title2", value: "222"),
-        StatiscticModel(title: "Title3", value: "333"),
-        StatiscticModel(title: "Title4", value: "444", percentageChange: -32)
-    ]
+    var statistics: [StatiscticModel] = []
 
     private let dataService = CoinDataService()
+    private let marketService = MarketDataService()
     private var cancellables: Set<AnyCancellable> = []
 
     init() {
         dataService.$allCoins
             .receive(on: DispatchQueue.main)
             .sink { [weak self] coins in
-                guard let self else { return }
+                guard let self  = self else { return }
                 self.allCoins = coins
                 self.applyFilter()
+            }
+            .store(in: &cancellables)
+        
+        marketService.$marketData
+            .receive(on: DispatchQueue.main)
+            .map(mapGlobalMarketData)
+            .sink { [weak self] returnedStats in
+                guard let self = self else { return }
+                self.statistics = returnedStats
             }
             .store(in: &cancellables)
     }
@@ -48,5 +53,22 @@ final class HomeVM {
             || coin.symbol.lowercased().contains(q)
             || coin.id.lowercased().contains(q)
         }
+    }
+    
+    private func mapGlobalMarketData(marketData: MarketDataModel?) -> [StatiscticModel] {
+        var stats: [StatiscticModel] = []
+        guard let data = marketData else { return stats }
+        
+        let marketCap = StatiscticModel(title: "Market Cap", value: data.marketCap, percentageChange: data.marketCapChangePercentage24HUsd)
+        
+        let volume = StatiscticModel(title: "24H Value", value: data.value)
+        
+        let btcDominance = StatiscticModel(title: "BTC Dominance", value: data.btcDominance)
+        
+        let portfolio = StatiscticModel(title: "PortfolioValue", value: "00.00", percentageChange: -13.03)
+        
+        stats.append(contentsOf: [marketCap, volume, btcDominance, portfolio])
+        
+        return stats
     }
 }
