@@ -32,4 +32,8 @@ final class MarketDataService {
         //            .store(in: &coinsSubscription)
     }
     
+    func reloadMarketData() {
+        getData()
+    }
+    
 }

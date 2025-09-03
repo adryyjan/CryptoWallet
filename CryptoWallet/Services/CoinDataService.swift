@@ -33,4 +33,8 @@ final class CoinDataService {
         //            .store(in: &coinsSubscription)
     }
     
+    func reloadCoinData() {
+        getCoins()
+    }
+    
 }

@@ -15,12 +15,14 @@ final class HomeVM {
     var portfolioCoins: [CoinModel] = []
     var filteredCoins: [CoinModel] = []
     var searchText: String = "" { didSet { applyFilter() } }
-    
     var statistics: [StatiscticModel] = []
+    
+    var isDataLoading: Bool = false
     
     private let dataService = CoinDataService()
     private let marketService = MarketDataService()
     private let portfolioService = PortfolioDataService()
+    private let hapticManager = HapticMenager.shared
     
     private var cancellables: Set<AnyCancellable> = []
     
@@ -34,12 +36,30 @@ final class HomeVM {
             }
             .store(in: &cancellables)
         
+        let portfolioCoinsPublisher = dataService.$allCoins
+                    .combineLatest(portfolioService.$savedEntities)
+                    .map { coins, entities -> [CoinModel] in
+                        coins.compactMap { coin in
+                            
+                            guard let entity = entities.first(where: { $0.coinID == coin.id }) else { return nil }
+                            return coin.updateHoldings(amount: entity.ammount)
+                        }
+                    }
+                    .share()
+
+                portfolioCoinsPublisher
+                    .receive(on: DispatchQueue.main)
+                    .sink { [weak self] in self?.portfolioCoins = $0 }
+                    .store(in: &cancellables)
+        
         marketService.$marketData
             .receive(on: DispatchQueue.main)
+            .combineLatest(portfolioCoinsPublisher)
             .map(mapGlobalMarketData)
             .sink { [weak self] returnedStats in
                 guard let self = self else { return }
                 self.statistics = returnedStats
+                self.isDataLoading = false
             }
             .store(in: &cancellables)
         
@@ -74,7 +94,15 @@ final class HomeVM {
         }
     }
     
-    private func mapGlobalMarketData(marketData: MarketDataModel?) -> [StatiscticModel] {
+    func reloadData() {
+        isDataLoading = true
+        dataService.reloadCoinData()
+        marketService.reloadMarketData()
+        hapticManager.notify(type: .success)
+        
+    }
+    
+    private func mapGlobalMarketData(marketData: MarketDataModel?, portfolioCoins: [CoinModel]) -> [StatiscticModel] {
         var stats: [StatiscticModel] = []
         guard let data = marketData else { return stats }
         
@@ -84,7 +112,22 @@ final class HomeVM {
         
         let btcDominance = StatiscticModel(title: "BTC Dominance", value: data.btcDominance)
         
-        let portfolio = StatiscticModel(title: "PortfolioValue", value: "00.00", percentageChange: -13.03)
+        let portfolioValue = portfolioCoins
+            .map { $0.currentHoldingsValue }
+            .reduce(0.0, +)
+        
+        let previousValue = portfolioCoins.map { coin -> Double in
+            let currentValue = coin.currentHoldingsValue
+            let percentageChange = (coin.priceChangePercentage24H ?? 0) / 100
+            let previousValue = currentValue / (1 + percentageChange)
+            
+            return previousValue
+        }
+            .reduce(0.0, +)
+        
+        let percaentageChange = ((portfolioValue - previousValue) / previousValue) * 100
+        
+        let portfolio = StatiscticModel(title: "PortfolioValue", value: portfolioValue.asCurrencyWith2Dec(), percentageChange: percaentageChange)
         
         stats.append(contentsOf: [marketCap, volume, btcDominance, portfolio])
         
