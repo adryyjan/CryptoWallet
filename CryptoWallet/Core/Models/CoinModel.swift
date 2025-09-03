@@ -29,7 +29,7 @@ struct CoinModel: Identifiable, Codable {
     var currentHoldings: Double?
     
     var currentHoldingsValue : Double {
-        (currentHoldings ?? 0 ) * currentPrice
+        (self.currentHoldings ?? 0 ) * currentPrice
     }
     
     var rang: Int {
@@ -65,11 +65,16 @@ struct CoinModel: Identifiable, Codable {
     }
     
     
-    private func upodateHoldinga(ammount: Double) -> CoinModel {
-        var coin = self
-        coin.currentHoldings = ammount
-        return coin
+//    func updateHolding(ammount: Double) -> CoinModel {
+//        var coin = self
+//        coin.currentHoldings = ammount
+//        return coin
+//    }
+    
+    func updateHoldings(amount: Double) -> CoinModel {
+        return CoinModel(id: id, symbol: symbol, name: name, image: image, currentPrice: currentPrice, marketCap: marketCap, marketCapRank: marketCapRank, fullyDilutedValuation: fullyDilutedValuation, totalVolume: totalVolume, high24H: high24H, low24H: low24H, priceChange24H: priceChange24H, priceChangePercentage24H: priceChangePercentage24H, marketCapChange24H: marketCapChange24H, marketCapChangePercentage24H: marketCapChangePercentage24H, circulatingSupply: circulatingSupply, totalSupply: totalSupply, maxSupply: maxSupply, ath: ath, athChangePercentage: athChangePercentage, athDate: athDate, atl: atl, atlChangePercentage: atlChangePercentage, atlDate: atlDate, lastUpdated: lastUpdated, sparklineIn7D: sparklineIn7D, priceChangePercentage24HInCurrency: priceChangePercentage24HInCurrency, currentHoldings: amount)
     }
+    
     
     static let coin = CoinModel(
         id: "bitcoin",

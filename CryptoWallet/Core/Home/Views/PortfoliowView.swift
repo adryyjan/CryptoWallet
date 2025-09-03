@@ -45,12 +45,27 @@ struct PortfoliowView: View {
                         .font(.headline)
                     }
                 }
+                .onChange(of: vm.searchText) { oldValue, newValue in
+                    if newValue.isEmpty {
+                        resetSelectedCoin()
+                    }
+                }
             }
         }
         
         
     }
     
+   
+}
+
+#Preview {
+    PortfoliowView()
+}
+
+extension PortfoliowView {
+    
+    //MARK: - FUNCTIONS
     private func isSelected(_ coin: CoinModel) -> Bool {
         selectedCoin?.id == coin.id
     }
@@ -65,7 +80,9 @@ struct PortfoliowView: View {
     }
     
     private func saveButtonPressed() {
-        guard let coin = selectedCoin else { return }
+        guard let coin = selectedCoin, let amount = Double(quantityText) else { return }
+        
+        vm.updatePortfolio(coin: coin, ammount: amount)
         
         withAnimation(.easeInOut(duration: 0.2)){
             showCheckmark = true
@@ -87,18 +104,25 @@ struct PortfoliowView: View {
         selectedCoin = nil
         vm.searchText = ""
     }
-}
-
-#Preview {
-    PortfoliowView()
-}
-
-extension PortfoliowView {
+    
+    private func updateSelectedCoin(coin: CoinModel) {
+        selectedCoin = coin
+        
+        if let portfolioCoin = vm.portfolioCoins.first(where: { $0.id == coin.id }),
+            let ammount = portfolioCoin.currentHoldings {
+                quantityText = String(ammount)
+            }else {
+                quantityText = ""
+            }
+        
+    }
+    
+    //MARK: - EXTENSIONS
     
     private var coinLogoList : some View {
         ScrollView(.horizontal,showsIndicators: false) {
             LazyHStack {
-                ForEach(vm.allCoins) { coin in
+                ForEach(vm.searchText.isEmpty ? vm.portfolioCoins : vm.filteredCoins) { coin in
                     CoinLogoView(coin: coin)
                         .frame(width: 75, height: 120)
                         .background(Color.theme.background)
@@ -111,7 +135,7 @@ extension PortfoliowView {
                         )
                         .onTapGesture {
                             withAnimation(.easeInOut(duration: 0.3)) {
-                                selectedCoin = coin
+                                updateSelectedCoin(coin: coin)
                             }
                         }
                     

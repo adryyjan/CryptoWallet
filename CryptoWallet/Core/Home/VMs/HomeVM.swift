@@ -17,11 +17,13 @@ final class HomeVM {
     var searchText: String = "" { didSet { applyFilter() } }
     
     var statistics: [StatiscticModel] = []
-
+    
     private let dataService = CoinDataService()
     private let marketService = MarketDataService()
+    private let portfolioService = PortfolioDataService()
+    
     private var cancellables: Set<AnyCancellable> = []
-
+    
     init() {
         dataService.$allCoins
             .receive(on: DispatchQueue.main)
@@ -40,8 +42,25 @@ final class HomeVM {
                 self.statistics = returnedStats
             }
             .store(in: &cancellables)
+        
+        dataService.$allCoins
+            .combineLatest(portfolioService.$savedEntities)
+            .map { coinModels, portfolioEntities -> [CoinModel] in
+                coinModels.compactMap { coin -> CoinModel? in
+                    guard let entity = portfolioEntities.first(where: { $0.coinID == coin.id }) else { return nil }
+                    return coin.updateHoldings(amount: entity.ammount)
+                }
+            }
+            .sink { [weak self] portfolioCoins in
+                self?.portfolioCoins = portfolioCoins
+            }
+            .store(in: &cancellables)
     }
-
+    
+    func updatePortfolio(coin: CoinModel, ammount: Double) {
+        portfolioService.updatePortfolio(coin: coin, ammount: ammount)
+    }
+    
     private func applyFilter() {
         let q = searchText.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
         guard !q.isEmpty else {
