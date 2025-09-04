@@ -107,16 +107,46 @@ extension HomeView {
     
     private var columnTitles: some View {
         HStack {
-            Text("Coin")
+            HStack(spacing: 4.0) {
+                Text("Coin")
+                Image(systemName: "chevron.down")
+                    .opacity(vm.isSorted(option1: .rank, option2: .rankReverse) ? 1.0 : 0.0)
+                    .rotationEffect(Angle(degrees: vm.sortOption == .rank ? 0 : 180))
+            }
+            .onTapGesture {
+                withAnimation(.default) {
+                    vm.sortOption = vm.sortOption == .rank ? .rankReverse : .rank
+                }
+            }
             Spacer()
             if showPortfolio {
-                Text("Holdings")
-                    .transition(.move(edge: .leading))
+                HStack(spacing: 4.0) {
+                    Text("Holdings")
+                    Image(systemName: "chevron.down")
+                        .opacity(vm.isSorted(option1: .holdings, option2: .holdingReverse) ? 1.0 : 0.0)
+                        .rotationEffect(Angle(degrees: vm.sortOption == .holdings ? 0 : 180))
+                }
+                .onTapGesture {
+                    withAnimation(.default) {
+                        vm.sortOption = vm.sortOption == .holdings ? .holdingReverse: .holdings
+                    }
+                }
+                .transition(.move(edge: .leading))
                     
             }
             
-            Text("Price")
-                .frame(width: UIScreen.main.bounds.width / 3.5, alignment: .trailing)
+            HStack(spacing: 4.0) {
+                Text("Price")
+                Image(systemName: "chevron.down")
+                    .opacity(vm.isSorted(option1: .price, option2: .priceReverse) ? 1.0 : 0.0)
+                    .rotationEffect(Angle(degrees: vm.sortOption == .price ? 0 : 180))
+            }
+            .onTapGesture {
+                withAnimation(.default) {
+                    vm.sortOption = vm.sortOption == .price ? .priceReverse : .price
+                }
+            }
+            .frame(width: UIScreen.main.bounds.width / 3.5, alignment: .trailing)
             
             Button {
                 withAnimation(.spring()) {
@@ -131,4 +161,5 @@ extension HomeView {
             
         }
     }
+    
 }

@@ -14,10 +14,14 @@ final class HomeVM {
     var allCoins: [CoinModel] = []
     var portfolioCoins: [CoinModel] = []
     var filteredCoins: [CoinModel] = []
-    var searchText: String = "" { didSet { applyFilter() } }
     var statistics: [StatiscticModel] = []
     
+    var searchText: String = "" { didSet { applyFilter() } }
     var isDataLoading: Bool = false
+    var sortOption: SortOption = .holdings {
+        didSet { filterAndSortCoins(sort: sortOption, coins: allCoins)
+            portfolioCoins = sortPortfolioIfNeeded(coins: portfolioCoins)
+        }}
     
     private let dataService = CoinDataService()
     private let marketService = MarketDataService()
@@ -25,6 +29,10 @@ final class HomeVM {
     private let hapticManager = HapticMenager.shared
     
     private var cancellables: Set<AnyCancellable> = []
+    
+    enum SortOption {
+        case rank, rankReverse, holdings, holdingReverse, price, priceReverse
+    }
     
     init() {
         dataService.$allCoins
@@ -37,20 +45,20 @@ final class HomeVM {
             .store(in: &cancellables)
         
         let portfolioCoinsPublisher = dataService.$allCoins
-                    .combineLatest(portfolioService.$savedEntities)
-                    .map { coins, entities -> [CoinModel] in
-                        coins.compactMap { coin in
-                            
-                            guard let entity = entities.first(where: { $0.coinID == coin.id }) else { return nil }
-                            return coin.updateHoldings(amount: entity.ammount)
-                        }
-                    }
-                    .share()
-
-                portfolioCoinsPublisher
-                    .receive(on: DispatchQueue.main)
-                    .sink { [weak self] in self?.portfolioCoins = $0 }
-                    .store(in: &cancellables)
+            .combineLatest(portfolioService.$savedEntities)
+            .map { coins, entities -> [CoinModel] in
+                coins.compactMap { coin in
+                    
+                    guard let entity = entities.first(where: { $0.coinID == coin.id }) else { return nil }
+                    return coin.updateHoldings(amount: entity.ammount)
+                }
+            }
+            .share()
+        
+        portfolioCoinsPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] in self?.portfolioCoins = $0 }
+            .store(in: &cancellables)
         
         marketService.$marketData
             .receive(on: DispatchQueue.main)
@@ -72,7 +80,8 @@ final class HomeVM {
                 }
             }
             .sink { [weak self] portfolioCoins in
-                self?.portfolioCoins = portfolioCoins
+                
+                self?.portfolioCoins = self!.sortPortfolioIfNeeded(coins: portfolioCoins)
             }
             .store(in: &cancellables)
     }
@@ -92,6 +101,45 @@ final class HomeVM {
             || coin.symbol.lowercased().contains(q)
             || coin.id.lowercased().contains(q)
         }
+    }
+    private func filterAndSortCoins(sort: SortOption, coins: [CoinModel]) -> [CoinModel] {
+        applyFilter()
+        sortCoins(sort: sort, coins: &filteredCoins)
+        return filteredCoins
+    }
+    
+    private func sortCoins(sort: SortOption, coins: inout [CoinModel]){
+        switch sort {
+        case .price:
+            coins.sort(by: {$0.currentPrice < $1.currentPrice})
+        case .priceReverse:
+            coins.sort(by: {$0.currentPrice > $1.currentPrice})
+        case .rank:
+            coins.sort(by: {$0.rang < $1.rang})
+        case .rankReverse:
+            coins.sort(by: {$0.rang > $1.rang})
+        case .holdings:
+            coins.sort(by: {$0.currentHoldings ?? 0.0 < $1.currentHoldings ?? 0.0 })
+        case .holdingReverse:
+            coins.sort(by: {$0.currentHoldings ?? 0.0  > $1.currentHoldings ?? 0.0 })
+            
+        }
+    }
+    
+    private func sortPortfolioIfNeeded(coins: [CoinModel]) -> [CoinModel] {
+        
+        switch sortOption {
+        case .holdings:
+            return coins.sorted(by: {$0.currentHoldingsValue > $1.currentHoldingsValue})
+        case .holdingReverse:
+            return coins.sorted(by: {$0.currentHoldingsValue < $1.currentHoldingsValue})
+        default :
+            return coins
+        }
+    }
+    
+    func isSorted(option1: SortOption, option2: SortOption) -> Bool {
+        return option1 == sortOption || option2 == sortOption
     }
     
     func reloadData() {
