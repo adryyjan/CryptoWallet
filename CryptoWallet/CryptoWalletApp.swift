@@ -9,12 +9,21 @@ import SwiftUI
 
 @main
 struct CryptoWalletApp: App {
-    let persistenceController = PersistenceController.shared
+    @State private var homeVM = HomeVM()
+    
+    init() {
+        UINavigationBar.appearance().largeTitleTextAttributes = [.foregroundColor: UIColor(Color.theme.accent)]
+        UINavigationBar.appearance().titleTextAttributes = [.foregroundColor: UIColor(Color.theme.accent)]
+    }
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
-                .environment(\.managedObjectContext, persistenceController.container.viewContext)
+            NavigationView {
+                HomeView()
+                    .navigationBarBackButtonHidden(true)
+            }
+            .environment(homeVM)
+               
         }
     }
 }
