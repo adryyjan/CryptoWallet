@@ -11,7 +11,11 @@ struct HomeView: View {
     
     @State private var showPortfolio: Bool = false
     @State private var showPortfolioSheet: Bool = false
+    @State private var selectedCoin: CoinModel? = nil
+    @State private var showDetailsView: Bool = false
+    
     @Environment(HomeVM.self) private var vm
+    
     var body: some View {
         @Bindable var vm = vm
         
@@ -19,7 +23,6 @@ struct HomeView: View {
             Color.theme.background
                 .ignoresSafeArea()
                 
-            
             VStack {
                 
                 HomeHeader
@@ -49,6 +52,11 @@ struct HomeView: View {
             })
             
         }
+        .background(NavigationLink(isActive: $showDetailsView, destination: {
+            DetailLoadingView(coin: $selectedCoin)
+        }, label: {
+            EmptyView()
+        }))
     }
 }
 
@@ -59,6 +67,7 @@ struct HomeView: View {
 
 
 extension HomeView {
+    
     private var HomeHeader: some View {
         HStack {
             CircleButtonView(iconName: showPortfolio ? "plus" : "info")
@@ -89,17 +98,31 @@ extension HomeView {
     private var allCoins: some View {
         List{
             ForEach(vm.filteredCoins) { coin in
-                CoinRowView(coin: coin, showHoldingsColumn: false)
-                    .listRowInsets(.init(top: 10, leading: 0, bottom: 10, trailing: 10))
+                
+                    CoinRowView(coin: coin, showHoldingsColumn: false)
+                        .listRowInsets(.init(top: 10, leading: 0, bottom: 10, trailing: 10))
+                        .onTapGesture {
+                            segue(coin: coin)
+                        }
+                
+                
             }
         }
         .listStyle(PlainListStyle())
+    }
+    
+    private func segue(coin: CoinModel) {
+        selectedCoin = coin
+        showDetailsView.toggle()
     }
     private var portfolioCoins: some View {
         List{
             ForEach(vm.portfolioCoins) { coin in
                 CoinRowView(coin: coin, showHoldingsColumn: true)
                     .listRowInsets(.init(top: 10, leading: 0, bottom: 10, trailing: 10))
+                    .onTapGesture {
+                        segue(coin: coin)
+                    }
             }
         }
         .listStyle(PlainListStyle())
@@ -156,9 +179,6 @@ extension HomeView {
                 Image(systemName: "goforward")
             }
             .rotationEffect(Angle(degrees: vm.isDataLoading ? 360 : 0), anchor: .center)
-
-            
-            
         }
     }
     
