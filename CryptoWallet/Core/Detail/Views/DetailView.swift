@@ -10,7 +10,7 @@ import SwiftUI
 struct DetailLoadingView: View {
     @Binding var coin: CoinModel?
     
-
+    
     
     var body: some View {
         ZStack {
@@ -25,21 +25,80 @@ struct DetailLoadingView: View {
 
 struct DetailView: View {
     
-    @State private var detailsVM : DetailVM
-    
-    let coin: CoinModel
+    @StateObject private var detailsVM : DetailVM
+    private let columns : [GridItem] = [
+        GridItem(.flexible(minimum: 0, maximum: .infinity)),
+        GridItem(.flexible(minimum: 0, maximum: .infinity))
+    ]
+    private var spacing: CGFloat = 20
     
     init(coin: CoinModel) {
-        self.coin = coin
-        _detailsVM = State(wrappedValue: DetailVM(coin: coin))
+        _detailsVM = StateObject(wrappedValue: DetailVM(coin: coin))
     }
     
     var body: some View {
-        Text(coin.name)
-        
+        ScrollView {
+            VStack(spacing: spacing) {
+                Text("")
+                    .frame(height: 150)
+                
+                overwiewSecton
+                Divider()
+                overviewGrid
+               
+                descriptionSection
+                Divider()
+                additionaGrid
+ 
+            }
+        }
+        .padding()
+        .navigationTitle(detailsVM.coin.name)
     }
 }
 
 #Preview {
-    DetailView(coin: CoinModel.coin)
+    NavigationView {
+        DetailView(coin: CoinModel.coin)
+    }
+}
+
+extension DetailView {
+    
+    private var overwiewSecton: some View {
+        Text("Overwiew")
+            .font(.title)
+            .bold()
+            .foregroundStyle(Color.theme.accent)
+            .frame(maxWidth: .infinity, alignment: .leading)
+       
+    }
+    
+    private var descriptionSection: some View {
+        Text("Details")
+            .font(.title)
+            .bold()
+            .foregroundStyle(Color.theme.accent)
+            .frame(maxWidth: .infinity, alignment: .leading)
+        
+    }
+    
+    private var overviewGrid: some View {
+        LazyVGrid(columns: columns, alignment: .leading, spacing: spacing) {
+            ForEach(detailsVM.overviewStatictics) { stat in
+                StatisticView(stat: stat)
+            }
+        }
+    }
+    
+    private var additionaGrid: some View {
+        LazyVGrid(columns: columns, alignment: .leading, spacing: spacing) {
+            ForEach(detailsVM.addidtionalStatictics) { stat in
+                StatisticView(stat: stat)
+                
+            }
+        }
+    }
+    
+    
 }
