@@ -26,6 +26,7 @@ struct CoinRowView: View {
             rightColumn
             
         }
+        .background(Color.theme.background.opacity(0.001))
         .font(.subheadline)
     }
 }
@@ -67,5 +68,6 @@ extension CoinRowView {
                 .foregroundStyle( coin.priceChangePercentage24H  ?? 0 >= 0 ? Color.theme.green : Color.theme.red)
         }
         .frame(width: UIScreen.main.bounds.width / 3.5)
+        
     }
 }

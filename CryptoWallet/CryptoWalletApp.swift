@@ -10,6 +10,7 @@ import SwiftUI
 @main
 struct CryptoWalletApp: App {
     @State private var homeVM = HomeVM()
+    @State private var path = NavigationPath()
     
     init() {
         UINavigationBar.appearance().largeTitleTextAttributes = [.foregroundColor: UIColor(Color.theme.accent)]
@@ -18,7 +19,7 @@ struct CryptoWalletApp: App {
 
     var body: some Scene {
         WindowGroup {
-            NavigationView {
+            NavigationStack(path: $path) {
                 HomeView()
                     .navigationBarBackButtonHidden(true)
             }
