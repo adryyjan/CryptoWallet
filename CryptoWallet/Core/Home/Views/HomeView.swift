@@ -13,6 +13,7 @@ struct HomeView: View {
     @State private var showPortfolioSheet: Bool = false
     @State private var selectedCoin: CoinModel? = nil
     @State private var showDetailsView: Bool = false
+    @State private var showSettingsView: Bool = false
     
     @Environment(HomeVM.self) private var vm
     
@@ -22,7 +23,9 @@ struct HomeView: View {
         ZStack {
             Color.theme.background
                 .ignoresSafeArea()
-                
+                .sheet(isPresented: $showSettingsView) {
+                    SettingsView()
+                }
             VStack {
                 
                 HomeHeader
@@ -75,6 +78,8 @@ extension HomeView {
                 .onTapGesture {
                     if showPortfolio {
                         showPortfolioSheet.toggle()
+                    }else{
+                        showSettingsView.toggle()
                     }
                 }
                 .background(CircleButtonAnimationView(isAnimating: $showPortfolio))
