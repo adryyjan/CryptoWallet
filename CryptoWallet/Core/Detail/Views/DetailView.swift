@@ -38,9 +38,12 @@ struct DetailView: View {
     
     var body: some View {
         ScrollView {
+            VStack {
+                ChartView(coin: detailsVM.coin)
+                    .padding(.vertical)
+            }
             VStack(spacing: spacing) {
-                Text("")
-                    .frame(height: 150)
+                
                 
                 overwiewSecton
                 Divider()
@@ -51,9 +54,16 @@ struct DetailView: View {
                 additionaGrid
  
             }
+            .padding()
         }
-        .padding()
+        
         .navigationTitle(detailsVM.coin.name)
+        .navigationBarTitleDisplayMode(.large) 
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                navigationBarTrailingItem
+            }
+        }
     }
 }
 
@@ -97,6 +107,16 @@ extension DetailView {
                 StatisticView(stat: stat)
                 
             }
+        }
+    }
+    
+    private var navigationBarTrailingItem: some View {
+        HStack {
+            Text(detailsVM.coin.symbol.uppercased())
+                .font(.headline)
+                .foregroundStyle(Color.theme.secoundaryText)
+            CoinImageView(coin: detailsVM.coin)
+                .frame(width: 25,height: 25)
         }
     }
     

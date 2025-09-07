@@ -30,7 +30,6 @@ final class CoinDetailDataService {
                   receiveValue: { [weak self] (returnedCoinDetails) in
                 guard let self = self else { return }
                 self.coinDetails = returnedCoinDetails
-                print(returnedCoinDetails)
                 self.coinDetailSubscription?.cancel()
             })
         //            .store(in: &coinsSubscription)
