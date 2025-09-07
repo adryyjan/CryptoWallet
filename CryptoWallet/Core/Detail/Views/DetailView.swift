@@ -31,6 +31,7 @@ struct DetailView: View {
         GridItem(.flexible(minimum: 0, maximum: .infinity))
     ]
     private var spacing: CGFloat = 20
+    @State private var showFullDesc: Bool = false
     
     init(coin: CoinModel) {
         _detailsVM = StateObject(wrappedValue: DetailVM(coin: coin))
@@ -38,22 +39,36 @@ struct DetailView: View {
     
     var body: some View {
         ScrollView {
+            VStack {
+                ChartView(coin: detailsVM.coin)
+                    .padding(.vertical)
+            }
             VStack(spacing: spacing) {
-                Text("")
-                    .frame(height: 150)
+                
                 
                 overwiewSecton
                 Divider()
+                
+                descryptionSection
                 overviewGrid
                
                 descriptionSection
                 Divider()
                 additionaGrid
+                
+                LinkSection
  
             }
+            .padding()
         }
-        .padding()
+        
         .navigationTitle(detailsVM.coin.name)
+        .navigationBarTitleDisplayMode(.large)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                navigationBarTrailingItem
+            }
+        }
     }
 }
 
@@ -98,6 +113,56 @@ extension DetailView {
                 
             }
         }
+    }
+    
+    private var navigationBarTrailingItem: some View {
+        HStack {
+            Text(detailsVM.coin.symbol.uppercased())
+                .font(.headline)
+                .foregroundStyle(Color.theme.secoundaryText)
+            CoinImageView(coin: detailsVM.coin)
+                .frame(width: 25,height: 25)
+        }
+    }
+    
+    private var descryptionSection: some View {
+        ZStack {
+            if let coinDescription = detailsVM.coinDescription, !coinDescription.isEmpty {
+                VStack {
+                    Text(coinDescription)
+                        .lineLimit(showFullDesc ? nil : 3)
+                        .font(.callout)
+                        .foregroundStyle(Color.theme.secoundaryText)
+                    
+                    Button {
+                        withAnimation(.easeInOut) {
+                            showFullDesc.toggle()
+                        }
+                    } label: {
+                        Text(showFullDesc ? "Show less..." : "Read more...")
+                            .font(.caption)
+                            .fontWeight(.bold)
+                            .padding(.vertical, 4)
+                    }
+
+                }
+                
+            }
+        }
+    }
+    
+    private var LinkSection: some View {
+        VStack(alignment: .leading, spacing: 10.0) {
+            if let website = detailsVM.websiteURL, let urlWebsite = URL(string: website) {
+                Link("Website", destination: urlWebsite)
+            }
+            if let reddit = detailsVM.reddditURL, let urlReddit = URL(string: reddit) {
+                Link("Reddit", destination: urlReddit)
+            }
+        }
+        .foregroundStyle(.blue)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .font(.headline)
     }
     
     
