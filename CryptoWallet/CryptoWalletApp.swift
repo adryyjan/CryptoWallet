@@ -11,20 +11,27 @@ import SwiftUI
 struct CryptoWalletApp: App {
     @State private var homeVM = HomeVM()
     @State private var path = NavigationPath()
-    
-    init() {
-        UINavigationBar.appearance().largeTitleTextAttributes = [.foregroundColor: UIColor(Color.theme.accent)]
-        UINavigationBar.appearance().titleTextAttributes = [.foregroundColor: UIColor(Color.theme.accent)]
-    }
+    @State private var showLaunchScreen = true
 
     var body: some Scene {
         WindowGroup {
-            NavigationStack(path: $path) {
-                HomeView()
-                    .navigationBarBackButtonHidden(true)
+            ZStack {
+                NavigationStack(path: $path) {
+                    HomeView()
+                        .navigationBarBackButtonHidden(true)
+                }
+                .environment(homeVM)
+
+                ZStack {
+                    if showLaunchScreen {
+                        LaunchView(showLaunchScreen: $showLaunchScreen)
+                            .transition(.move(edge: .leading))
+                            
+                    }
+                }
+                .zIndex(2.0)
+                
             }
-            .environment(homeVM)
-               
         }
     }
 }
