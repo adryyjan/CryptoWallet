@@ -35,16 +35,23 @@ struct HomeView: View {
                 SearchBarView(searchText: $vm.searchText)
                 
                 columnTitles
-                .font(.caption)
-                .foregroundStyle(Color.theme.secoundaryText)
-                .padding(.horizontal)
+                    .font(.caption)
+                    .foregroundStyle(Color.theme.secoundaryText)
+                    .padding(.horizontal)
                 if !showPortfolio {
                     allCoins
                         .transition(.move(edge: .leading))
                 }
                 if showPortfolio {
-                    portfolioCoins
-                        .transition(.move(edge: .trailing))
+                    ZStack(alignment: .top) {
+                        if vm.portfolioCoins.isEmpty && vm.searchText.isEmpty{
+                            portfolioMessage
+                        }else{
+                            portfolioCoins
+                                .transition(.move(edge: .trailing))
+                        }
+                    }
+                    
                 }
                 
                 Spacer(minLength: 0)
@@ -104,11 +111,11 @@ extension HomeView {
         List{
             ForEach(vm.filteredCoins) { coin in
                 
-                    CoinRowView(coin: coin, showHoldingsColumn: false)
-                        .listRowInsets(.init(top: 10, leading: 0, bottom: 10, trailing: 10))
-                        .onTapGesture {
-                            segue(coin: coin)
-                        }
+                CoinRowView(coin: coin, showHoldingsColumn: false)
+                    .listRowInsets(.init(top: 10, leading: 0, bottom: 10, trailing: 10))
+                    .onTapGesture {
+                        segue(coin: coin)
+                    }
                 
                 
             }
@@ -160,7 +167,7 @@ extension HomeView {
                     }
                 }
                 .transition(.move(edge: .leading))
-                    
+                
             }
             
             HStack(spacing: 4.0) {
@@ -185,6 +192,18 @@ extension HomeView {
             }
             .rotationEffect(Angle(degrees: vm.isDataLoading ? 360 : 0), anchor: .center)
         }
+    }
+    
+    private var portfolioMessage: some View {
+        VStack {
+            Text("You dont have any coins in your portfolio YET 😄")
+            Text("Click + button to get started 🥳")
+        }
+        .font(.callout)
+        .foregroundStyle(Color.theme.accent)
+        .fontWeight(.medium)
+        .multilineTextAlignment(.center)
+        .padding(50)
     }
     
 }

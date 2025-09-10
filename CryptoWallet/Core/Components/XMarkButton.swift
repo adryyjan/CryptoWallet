@@ -14,7 +14,6 @@ struct XMarkButton: View {
     var body: some View {
         Button(action: {
             dismiss()
-            print("x")
         }, label: {
             Image(systemName: "xmark")
                 .font(.headline)

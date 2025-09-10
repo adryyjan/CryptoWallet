@@ -24,6 +24,7 @@ final class CoinDataService {
         
         coinsSubscription = networkMenagar.download(with: url)
             .decode(type: [CoinModel].self, decoder: JSONDecoder())
+            .receive(on: DispatchQueue.main)
             .sink(receiveCompletion: networkMenagar.handleComplition,
                   receiveValue: { [weak self] (returnedCoins) in
                 guard let self = self else { return }

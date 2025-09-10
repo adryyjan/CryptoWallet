@@ -173,7 +173,7 @@ final class HomeVM {
         }
             .reduce(0.0, +)
         
-        let percaentageChange = ((portfolioValue - previousValue) / previousValue) * 100
+        let percaentageChange = ((portfolioValue - previousValue) / previousValue)
         
         let portfolio = StatiscticModel(title: "PortfolioValue", value: portfolioValue.asCurrencyWith2Dec(), percentageChange: percaentageChange)
         

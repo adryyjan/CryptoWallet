@@ -23,6 +23,7 @@ final class MarketDataService {
         
         marketDataSubscription = networkMenagar.download(with: url)
             .decode(type: GlobalMarketData.self, decoder: JSONDecoder())
+            .receive(on: DispatchQueue.main)
             .sink(receiveCompletion: networkMenagar.handleComplition,
                   receiveValue: { [weak self] (returnedGlobalData) in
                 guard let self = self else { return }

@@ -14,7 +14,7 @@ struct SettingsView: View {
     let coingeckoURL = URL(string: "https://www.coingecko.com")
     
     var body: some View {
-        NavigationView {
+        NavigationStack{
             List {
                 aboutMe
                 
@@ -66,6 +66,7 @@ extension SettingsView {
             VStack(alignment: .leading) {
                 Image("coingecko")
                     .resizable()
+                    .scaledToFit()
                     .frame(height: 100)
                     .clipShape(RoundedRectangle(cornerRadius: 20))
                 
