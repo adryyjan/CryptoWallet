@@ -14,18 +14,27 @@ struct SettingsView: View {
     let coingeckoURL = URL(string: "https://www.coingecko.com")
     
     var body: some View {
-        NavigationStack{
-            List {
-                aboutMe
+
+        NavigationStack {
+            ZStack{
+
                 
-                coinGekko
-            }
-            .navigationTitle("Settings")
-            .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    XMarkButton()
+                Color.theme.background
+                
+                List {
+                    aboutMe
+                        .listRowBackground(Color.theme.background.opacity(0.5))
+                    coinGekko
+                        .listRowBackground(Color.theme.background.opacity(0.5))
+                }
+                .navigationTitle("Settings")
+                .toolbar {
+                    ToolbarItem(placement: .topBarLeading) {
+                        XMarkButton()
+                    }
                 }
             }
+            
         }
     }
 }

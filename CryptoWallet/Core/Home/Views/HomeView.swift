@@ -110,12 +110,12 @@ extension HomeView {
     private var allCoins: some View {
         List{
             ForEach(vm.filteredCoins) { coin in
-                
-                CoinRowView(coin: coin, showHoldingsColumn: false)
-                    .listRowInsets(.init(top: 10, leading: 0, bottom: 10, trailing: 10))
-                    .onTapGesture {
-                        segue(coin: coin)
-                    }
+                    CoinRowView(coin: coin, showHoldingsColumn: false)
+                        .listRowInsets(.init(top: 10, leading: 0, bottom: 10, trailing: 10))
+                        .onTapGesture {
+                            segue(coin: coin)
+                        }
+                        .listRowBackground(Color.clear)
                 
                 
             }
@@ -135,6 +135,7 @@ extension HomeView {
                     .onTapGesture {
                         segue(coin: coin)
                     }
+                    .listRowBackground(Color.clear)
             }
         }
         .listStyle(PlainListStyle())
