@@ -12,6 +12,12 @@ struct CryptoWalletApp: App {
     @State private var homeVM = HomeVM()
     @State private var path = NavigationPath()
     @State private var showLaunchScreen = true
+    
+    init(){
+        UINavigationBar.appearance().largeTitleTextAttributes = [.foregroundColor: UIColor(Color.theme.accent)]
+        UINavigationBar.appearance().titleTextAttributes = [.foregroundColor: UIColor(Color.theme.accent)]
+        UITableView.appearance().backgroundColor = UIColor(Color.clear)
+    }
 
     var body: some Scene {
         WindowGroup {

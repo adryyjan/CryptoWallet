@@ -28,35 +28,37 @@ struct PortfoliowView: View {
                     if selectedCoin != nil {
                         
                         portfolioInput
-                        .padding()
-                        .font(.headline)
-                        .animation(nil, value: 0)
+                            .padding()
+                            .font(.headline)
+                            .animation(nil, value: 0)
                     }
                     
-                    
                 }
-                .navigationTitle("Edit Portfolio")
-                .toolbar {
-                    ToolbarItem(placement: .topBarLeading) {
-                        XMarkButton()
-                    }
-                    ToolbarItem(placement: .topBarTrailing) {
-                        trailingButton
+            }
+            .background(Color.theme.background)
+            .navigationTitle("Edit Portfolio")
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    XMarkButton()
+                }
+                ToolbarItem(placement: .topBarTrailing) {
+                    trailingButton
                         .font(.headline)
-                    }
                 }
-                .onChange(of: vm.searchText) { oldValue, newValue in
-                    if newValue.isEmpty {
-                        resetSelectedCoin()
-                    }
+            }
+            .onChange(of: vm.searchText) { oldValue, newValue in
+                if newValue.isEmpty {
+                    resetSelectedCoin()
                 }
             }
         }
         
         
+        
+        
     }
     
-   
+    
 }
 
 #Preview {
@@ -109,11 +111,11 @@ extension PortfoliowView {
         selectedCoin = coin
         
         if let portfolioCoin = vm.portfolioCoins.first(where: { $0.id == coin.id }),
-            let ammount = portfolioCoin.currentHoldings {
-                quantityText = String(ammount)
-            }else {
-                quantityText = ""
-            }
+           let ammount = portfolioCoin.currentHoldings {
+            quantityText = String(ammount)
+        }else {
+            quantityText = ""
+        }
         
     }
     
@@ -182,7 +184,7 @@ extension PortfoliowView {
                 Text("Save".uppercased())
             }
             .opacity(selectedCoin != nil && selectedCoin?.currentHoldings != Double(quantityText) ? 1 : 0)
-
+            
             
         }
     }

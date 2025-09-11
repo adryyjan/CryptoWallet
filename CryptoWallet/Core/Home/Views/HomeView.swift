@@ -109,6 +109,7 @@ extension HomeView {
                         .onTapGesture {
                             segue(coin: coin)
                         }
+                        .listRowBackground(Color.clear)
                 
                 
             }
@@ -128,6 +129,7 @@ extension HomeView {
                     .onTapGesture {
                         segue(coin: coin)
                     }
+                    .listRowBackground(Color.clear)
             }
         }
         .listStyle(PlainListStyle())
