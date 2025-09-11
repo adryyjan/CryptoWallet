@@ -44,7 +44,7 @@ extension SettingsView {
                     .clipShape(RoundedRectangle(cornerRadius: 20))
                 
                 
-                }
+            }
             VStack(alignment: .leading, spacing: 10.0) {
                 Text("Project made by Adrian Mazek as end result of yt Swiftfull Thinking course 🥳")
                 Text("Archtecture based on MVVM")
