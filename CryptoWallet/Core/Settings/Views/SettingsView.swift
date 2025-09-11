@@ -25,7 +25,6 @@ struct SettingsView: View {
             .navigationTitle("Settings")
             .toolbar { ToolbarItem(placement: .topBarLeading) { XMarkButton() } }
             .scrollContentBackground(.hidden)
-//            .background(Color.theme.background)
 
         }
     }
