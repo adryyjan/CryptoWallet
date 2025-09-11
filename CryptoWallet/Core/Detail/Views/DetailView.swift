@@ -61,6 +61,8 @@ struct DetailView: View {
             }
             .padding()
         }
+        .background(Color.theme.background)
+        .ignoresSafeArea()
         
         .navigationTitle(detailsVM.coin.name)
         .navigationBarTitleDisplayMode(.large)

@@ -15,24 +15,18 @@ struct SettingsView: View {
     
     var body: some View {
         NavigationStack {
-            ZStack{
-                
-                Color.theme.background
-                
-                List {
-                    aboutMe
-                        .listRowBackground(Color.theme.background.opacity(0.5))
-                    coinGekko
-                        .listRowBackground(Color.theme.background.opacity(0.5))
-                }
-                .navigationTitle("Settings")
-                .toolbar {
-                    ToolbarItem(placement: .topBarLeading) {
-                        XMarkButton()
-                    }
-                }
+            List {
+                aboutMe
+                    .listRowBackground(Color.theme.background.opacity(0.5))
+                coinGekko
+                    .listRowBackground(Color.theme.background.opacity(0.5))
             }
             
+            .navigationTitle("Settings")
+            .toolbar { ToolbarItem(placement: .topBarLeading) { XMarkButton() } }
+            .scrollContentBackground(.hidden)
+//            .background(Color.theme.background)
+
         }
     }
 }
@@ -51,7 +45,7 @@ extension SettingsView {
                     .clipShape(RoundedRectangle(cornerRadius: 20))
                 
                 
-                }
+            }
             VStack(alignment: .leading, spacing: 10.0) {
                 Text("Project made by Adrian Mazek as end result of yt Swiftfull Thinking course 🥳")
                 Text("Archtecture based on MVVM")
